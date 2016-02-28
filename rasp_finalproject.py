@@ -112,6 +112,8 @@ while(True):
 
 	# Select limit from database
 	c.execute("SELECT outlet_id, elec_limit, elec_power FROM electricpower")
+	check_led_power = 0
+	check_led_limit = 0
 	for row in c.fetchall() :
 		# Data from rows
 		data_idoutlet = str(row[0])
@@ -125,16 +127,8 @@ while(True):
 		data_power_int = (int)(data_power_float)
 		# Check limit LED
 		
-		if(data_power_int < data_limit_int):
-			GPIO.output(22,GPIO.LOW)
-			GPIO.output(23,GPIO.HIGH)
-		if(data_power_int >= (data_limit_int-1) and data_limit_int != 0):
-			GPIO.output(22, GPIO.HIGH)
-			GPIO.output(23,GPIO.HIGH)
-		if(data_power_int >= data_limit_int and data_limit_int != 0):
-			GPIO.output(22, GPIO.HIGH)
-			GPIO.output(23,GPIO.LOW)	
-
+		check_led_power = check_led_power + data_power_int
+		check_led_limit = check_led_limit + data_limit_int
 
 		limit_str = "%4s%8s" % (data_idoutlet, data_limit)
 		print limit_str
@@ -146,12 +140,25 @@ while(True):
 		radio.startListening()
 		time.sleep(1)
 
+	if(check_led_power < check_led_limit):
+		GPIO.output(22,GPIO.LOW)
+		GPIO.output(23,GPIO.HIGH)
+	if(check_led_power >= (check_led_limit-50) and check_led_limit != 0):
+		GPIO.output(22, GPIO.HIGH)
+		GPIO.output(23,GPIO.HIGH)
+	if(check_led_power >= check_led_limit and check_led_limit != 0):
+		GPIO.output(22, GPIO.HIGH)
+		GPIO.output(23,GPIO.LOW)
+
+	all_power = str(check_led_power)
+	all_limit = str(check_led_limit)
+	print ("All Unit: "+all_power+" All Limit: "+all_limit)
 	# LCD show status
 
 	lcd = lcddriver.lcd()
 
-	lcd.lcd_display_string("ID:"+outlet_id, 1)
-	lcd.lcd_display_string("USE:"+unit+"", 2)
+	lcd.lcd_display_string("All Unit:  "+all_power, 1)
+	lcd.lcd_display_string("All Limit: "+all_limit+"", 2)
 
 	# Insert electricdata date/time/watt/unit
 	c.execute("INSERT INTO electricpower.electricdata (id, outlet_id, time, date, watt, unit) VALUES (null,%s,%s,%s,%s,%s)",(outlet_id, clock, date, watt, unit))
