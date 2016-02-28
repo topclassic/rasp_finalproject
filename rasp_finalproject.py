@@ -124,12 +124,16 @@ while(True):
 		data_power_float = (float)(data_power)
 		data_power_int = (int)(data_power_float)
 		# Check limit LED
-		if(data_power_int >= data_limit_int and data_limit_int != 0):
-			GPIO.output(23,GPIO.LOW)
-			GPIO.output(22, GPIO.HIGH)
+		
 		if(data_power_int < data_limit_int):
 			GPIO.output(22,GPIO.LOW)
 			GPIO.output(23,GPIO.HIGH)
+		if(data_power_int >= (data_limit_int-1) and data_limit_int != 0):
+			GPIO.output(22, GPIO.HIGH)
+			GPIO.output(23,GPIO.HIGH)
+		if(data_power_int >= data_limit_int and data_limit_int != 0):
+			GPIO.output(22, GPIO.HIGH)
+			GPIO.output(23,GPIO.LOW)	
 
 
 		limit_str = "%4s%8s" % (data_idoutlet, data_limit)
