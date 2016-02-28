@@ -45,10 +45,12 @@ radio.startListening()
 # Open database connection
 db = MySQLdb.connect(host="localhost", user="root", passwd="devilsecret", db="electricpower")	
 # Start loop send and recev
+check_clock = ""
+check_date = ""
 while(True):
 	ackPL = [1]
 	while  not radio.available(0):
-		time.sleep(1/1000)
+		time.sleep(1/10000)
 	#set cursor database	
 	c = db.cursor()
 
@@ -58,8 +60,8 @@ while(True):
 	receivedMessage = []
 	radio.read(receivedMessage, radio.getDynamicPayloadSize())
 
-	date = time.strftime("%y/%m/%d")
-	clock = time.strftime("%H:%M")
+	date = time.strftime("%Y-%m-%d")
+	clock = time.strftime("%H:%M:00")
 
 	count = 0
 	outlet_id = ""
@@ -152,6 +154,7 @@ while(True):
 
 	all_power = str(check_led_power)
 	all_limit = str(check_led_limit)
+
 	print ("All Unit: "+all_power+" All Limit: "+all_limit)
 	# LCD show status
 
@@ -160,7 +163,19 @@ while(True):
 	lcd.lcd_display_string("All Unit:  "+all_power, 1)
 	lcd.lcd_display_string("All Limit: "+all_limit+"", 2)
 
-	# Insert electricdata date/time/watt/unit
-	c.execute("INSERT INTO electricpower.electricdata (id, outlet_id, time, date, watt, unit) VALUES (null,%s,%s,%s,%s,%s)",(outlet_id, clock, date, watt, unit))
-	db.commit()	
+	c.execute("SELECT time, date FROM electricpower.electricdata")
+	for row in c.fetchall() :
+		# Data from rows
+		check_clock = str(row[0])
+		check_date = str(row[1])
 
+
+	print ("Date: "+check_date)
+	print ("Clock: "+check_clock)
+	print ("Date1: "+date)
+	print ("Clock1: "+clock)
+	# Insert electricdata date/time/watt/unit
+	if(check_clock != clock):
+		c.execute("INSERT INTO electricpower.electricdata (id, outlet_id, time, date, watt, unit) VALUES (null,%s,%s,%s,%s,%s)",(outlet_id, clock, date, watt, unit))
+		db.commit()	
+		print("OK Insert electricdata")
