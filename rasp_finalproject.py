@@ -100,15 +100,15 @@ while(True):
 		if(data_id_int == outlet_id_int):
 			check_id  += 1	
 
-	if(check_id  == 1):
-		# Insert if outlet_id first contact
+	# Insert if outlet_id first contact
+	if(check_id  == 1):	
 		elec_limit = 0
 		c.execute("INSERT INTO electricpower (outlet_id, elec_limit) VALUES (%s,%s)",(outlet_id, elec_limit))
 		db.commit()	
 		print("ok")
 	check_id  = 0
 
-	# update power every 5 min
+	# Update power every 5 min
 	c.execute("UPDATE electricpower SET elec_power=%s WHERE outlet_id=%s ",(unit, outlet_id))
 	db.commit()
 
@@ -124,13 +124,15 @@ while(True):
 
 		print("ID: "+data_idoutlet+" limit: "+data_limit+" unit: "+data_power)
 		# Change variable 
+		data_idoutlet_int = (int)(data_idoutlet)
 		data_limit_int = (int)(data_limit)
 		data_power_float = (float)(data_power)
 		data_power_int = (int)(data_power_float)
 		# Check limit LED
 		
-		check_led_power = check_led_power + data_power_int
-		check_led_limit = check_led_limit + data_limit_int
+		if(data_idoutlet_int != 0):
+			check_led_power = check_led_power + data_power_int
+			check_led_limit = check_led_limit + data_limit_int
 
 		limit_str = "%4s%8s" % (data_idoutlet, data_limit)
 		print limit_str
@@ -154,6 +156,30 @@ while(True):
 
 	all_power = str(check_led_power)
 	all_limit = str(check_led_limit)
+
+	# Insert All unit 
+	check_id = 1
+	alloutlet_id = 0
+	alloutlet_name = "All Outlet"
+	c.execute("SELECT outlet_id FROM electricpower")	
+	for row in c.fetchall() :
+		# Data from rows
+		data_id = str(row[0])
+		# Change variable
+		data_id_int = (int)(data_id )
+		# Check outlet_id is first or not
+		if(data_id_int == alloutlet_id):
+			check_id  += 1	
+
+	# Insert if outlet_id first contact
+	if(check_id  == 1):
+		alloutlet_limit = 0
+		c.execute("INSERT INTO electricpower (outlet_id, outlet_name, elec_power, elec_limit) VALUES (%s,%s,%s,%s)",(alloutlet_id, alloutlet_name, all_power, alloutlet_limit))
+		db.commit()
+	check_id  = 0
+
+	c.execute("UPDATE electricpower SET elec_power=%s WHERE outlet_id=0 ",(all_power))
+	db.commit()
 
 	print ("All Unit: "+all_power+" All Limit: "+all_limit)
 	# LCD show status
