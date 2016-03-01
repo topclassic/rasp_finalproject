@@ -132,7 +132,7 @@ while(True):
 		
 		if(data_idoutlet_int != 0):
 			check_led_power = check_led_power + data_power_int
-			check_led_limit = check_led_limit + data_limit_int
+			#check_led_limit = check_led_limit + data_limit_int
 
 		limit_str = "%4s%8s" % (data_idoutlet, data_limit)
 		print limit_str
@@ -144,7 +144,14 @@ while(True):
 		radio.startListening()
 		time.sleep(1)
 
-	if(check_led_power < check_led_limit):
+
+	c.execute("SELECT elec_limit FROM electricpower WHERE outlet_id = 0")
+	for row in c.fetchall() :
+		# Data from rows
+		data_alloutlet_limit = str(row[0])
+		check_led_limit  = (int)(data_alloutlet_limit)
+		
+	if(check_led_power < check_led_limit or check_led_limit == 0):
 		GPIO.output(22,GPIO.LOW)
 		GPIO.output(23,GPIO.HIGH)
 	if(check_led_power >= (check_led_limit-50) and check_led_limit != 0):
