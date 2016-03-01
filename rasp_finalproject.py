@@ -134,15 +134,15 @@ while(True):
 			check_led_power = check_led_power + data_power_int
 			#check_led_limit = check_led_limit + data_limit_int
 
-		limit_str = "%4s%8s" % (data_idoutlet, data_limit)
-		print limit_str
-		#send	
-		radio.stopListening();
-		message = list(limit_str)
-		radio.write(message)
-		print ("We sent the message of{}".format(message))
-		radio.startListening()
-		time.sleep(1)
+			limit_str = "%4s%8s" % (data_idoutlet, data_limit)
+			print limit_str
+			#send	
+			radio.stopListening();
+			message = list(limit_str)
+			radio.write(message)
+			print ("We sent the message of{}".format(message))
+			radio.startListening()
+			time.sleep(1)
 
 
 	c.execute("SELECT elec_limit FROM electricpower WHERE outlet_id = 0")
