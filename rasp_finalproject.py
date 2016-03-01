@@ -47,6 +47,7 @@ db = MySQLdb.connect(host="localhost", user="root", passwd="devilsecret", db="el
 # Start loop send and recev
 date_time_data = ""
 data_outlet_id = ""
+data_alllimit = "0"
 while(True):
 	ackPL = [1]
 	while  not radio.available(0):
@@ -134,8 +135,8 @@ while(True):
 			check_led_power = check_led_power + data_power_int
 			#check_led_limit = check_led_limit + data_limit_int
 
-			limit_str = "%4s%8s" % (data_idoutlet, data_limit)
-			print limit_str
+			limit_str = "%4s%8s%s" % (data_idoutlet, data_limit, data_alllimit)
+			print ("sent client"+limit_str)
 			#send	
 			radio.stopListening();
 			message = list(limit_str)
@@ -154,12 +155,15 @@ while(True):
 	if(check_led_power < check_led_limit or check_led_limit == 0):
 		GPIO.output(22,GPIO.LOW)
 		GPIO.output(23,GPIO.HIGH)
+		data_alllimit = "0"
 	if(check_led_power >= (check_led_limit-50) and check_led_limit != 0):
 		GPIO.output(22, GPIO.HIGH)
 		GPIO.output(23,GPIO.HIGH)
+		data_alllimit = "0"
 	if(check_led_power >= check_led_limit and check_led_limit != 0):
 		GPIO.output(22, GPIO.HIGH)
 		GPIO.output(23,GPIO.LOW)
+		data_alllimit = "1"
 
 	all_power = str(check_led_power)
 	all_limit = str(check_led_limit)
