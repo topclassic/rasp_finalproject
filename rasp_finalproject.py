@@ -116,7 +116,7 @@ while(True):
 
 	# Select limit from database
 	c.execute("SELECT outlet_id, elec_limit, elec_power FROM electricpower")
-	check_led_power = 0
+	check_led_power = 0.0
 	check_led_limit = 0
 	for row in c.fetchall() :
 		# Data from rows
@@ -128,12 +128,11 @@ while(True):
 		# Change variable 
 		data_idoutlet_int = (int)(data_idoutlet)
 		data_limit_int = (int)(data_limit)
-		data_power_float = (float)(data_power)
-		data_power_int = (int)(data_power_float)
+		data_power_float = (float)(data_power)		
 		# Check limit LED
 		
 		if(data_idoutlet_int != 0):
-			check_led_power = check_led_power + data_power_int
+			check_led_power = check_led_power + data_power_float
 			#check_led_limit = check_led_limit + data_limit_int
 
 			limit_str = "%4s%8s%s" % (data_idoutlet, data_limit, data_alllimit)
@@ -145,7 +144,6 @@ while(True):
 			print ("We sent the message of{}".format(message))
 			radio.startListening()
 			time.sleep(1)
-
 
 	c.execute("SELECT elec_limit FROM electricpower WHERE outlet_id = 0")
 	for row in c.fetchall() :
