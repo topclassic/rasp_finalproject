@@ -104,7 +104,8 @@ while(True):
 	# Insert if outlet_id first contact
 	if(check_id  == 1):	
 		elec_limit = 0
-		c.execute("INSERT INTO electricpower (outlet_id, elec_limit) VALUES (%s,%s)",(outlet_id, elec_limit))
+		elec_outletname = "Unknown"
+		c.execute("INSERT INTO electricpower (outlet_id, outlet_name, elec_limit) VALUES (%s,%s,%s)",(outlet_id, elec_outletname, elec_limit))
 		db.commit()	
 		print("ok")
 	check_id  = 0
