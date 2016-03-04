@@ -153,15 +153,18 @@ while(True):
 		
 	if(check_led_power < check_led_limit or check_led_limit == 0):
 		GPIO.output(22,GPIO.LOW)
+		GPIO.output(24,GPIO.LOW)
 		GPIO.output(23,GPIO.HIGH)
 		data_alllimit = "0"
 	if(check_led_power >= (check_led_limit-50) and check_led_limit != 0):
-		GPIO.output(22, GPIO.HIGH)
-		GPIO.output(23,GPIO.HIGH)
+		GPIO.output(23,GPIO.LOW)
+		GPIO.output(22,GPIO.LOW)
+		GPIO.output(24,GPIO.HIGH)
 		data_alllimit = "0"
 	if(check_led_power >= check_led_limit and check_led_limit != 0):
 		GPIO.output(22, GPIO.HIGH)
 		GPIO.output(23,GPIO.LOW)
+		GPIO.output(24,GPIO.LOW)
 		data_alllimit = "1"
 
 	all_power = str(check_led_power)
@@ -196,8 +199,8 @@ while(True):
 
 	lcd = lcddriver.lcd()
 
-	lcd.lcd_display_string("All Unit:  "+all_power, 1)
-	lcd.lcd_display_string("All Limit: "+all_limit+"", 2)
+	lcd.lcd_display_string("Sum Unit: "+all_power, 1)
+	lcd.lcd_display_string("Sum Limit: "+all_limit+"", 2)
 
 	check_outlet_id = 1
 	c.execute("SELECT outlet_id, date_time FROM electricpower.electricdata")
